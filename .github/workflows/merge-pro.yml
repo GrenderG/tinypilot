@@ -1,4 +1,4 @@
-name: [TEST] Merge community changes into pro repo
+name: TEST Merge community changes into pro repo
 on:
   push:
     branches:
@@ -35,7 +35,7 @@ jobs:
           assignees: ${{ github.actor }}
           title: Merge changes from community repository
           body: |
-            [TEST] Merge the last changes from community repository :
+            TEST Merge the last changes from community repository :
 
             https://github.com/tiny-pilot/tinypilot/commit/${{ github.sha }}
 
