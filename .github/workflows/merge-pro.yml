@@ -12,6 +12,10 @@ jobs:
           repository: tiny-pilot/tinypilot-pro
           ref: test-auto-PR
           token: ${{ secrets.PR_BOT_PAT }}
+      - name: setup git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
       - name: Reset the default branch with upstream changes
         run: |
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
