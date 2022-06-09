@@ -20,8 +20,7 @@ jobs:
         run: |
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
           git checkout -b community-changes-${{ github.sha }}
-          git fetch upstream test-auto-PR
-          git merge upstream/test-auto-PR --no-edit --allow-unrelated-histories
+          git pull upstream test-auto-PR
           CONFLICTS="$(git diff --name-only --diff-filter=U --relative)"
           if [[ -z "${CONFLICTS}" ]]; then
             HAS_CONFLICTS='No'
