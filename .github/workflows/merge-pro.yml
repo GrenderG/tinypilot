@@ -1,8 +1,8 @@
-name: Merge community changes into pro repo
+name: [TEST] Merge community changes into pro repo
 on:
   push:
     branches:
-      - master
+      - test-auto-PR
 jobs:
   updateFork:
     runs-on: ubuntu-latest
@@ -10,13 +10,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: tiny-pilot/tinypilot-pro
+          ref: test-auto-PR
           token: ${{ secrets.PR_BOT_PAT }}
       - name: Reset the default branch with upstream changes
         run: |
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
           git checkout -b community-changes-${{ github.sha }}
-          git fetch upstream master
-          git merge upstream/master --no-edit
+          git fetch upstream test-auto-PR
+          git merge upstream/test-auto-PR --no-edit
           if [[ $? -eq 0 ]]; then
             HAS_CONFLICTS='No'
           else
@@ -34,7 +35,7 @@ jobs:
           assignees: ${{ github.actor }}
           title: Merge changes from community repository
           body: |
-            Merge the last changes from community repository :
+            [TEST] Merge the last changes from community repository :
 
             https://github.com/tiny-pilot/tinypilot/commit/${{ github.sha }}
 
