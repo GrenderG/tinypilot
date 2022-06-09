@@ -17,8 +17,9 @@ jobs:
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
           git checkout -b community-changes-${{ github.sha }}
           git fetch upstream test-auto-PR
-          git merge upstream/test-auto-PR --no-edit
-          if [[ $? -eq 0 ]]; then
+          git merge upstream/test-auto-PR --no-edit || true
+          CONFLICTS="$(git diff --name-only --diff-filter=U --relative)"
+          if [[ -z "${CONFLICTS}" ]]; then
             HAS_CONFLICTS='No'
           else
             HAS_CONFLICTS='Yes'
