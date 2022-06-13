@@ -19,8 +19,8 @@ jobs:
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
           git fetch upstream test-auto-PR
           git checkout upstream/test-auto-PR
-          git merge origin/test-auto-PR --no-edit
-          if [[ $? -ne 0 ]]; then
+          git merge origin/test-auto-PR --no-edit --allow-unrelated-histories
+          if [[ $? -eq 1 ]]; then
             git merge --abort
           fi
       - name: Create Pull Request
