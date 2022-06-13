@@ -14,10 +14,12 @@ jobs:
           token: ${{ secrets.PR_BOT_PAT }}
       - name: Merge upstream changes
         id: merge
+        continue-on-error: true
         run: |
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
           git fetch upstream test-auto-PR
-          git merge upstream/test-auto-PR --no-edit
+          git checkout upstream/test-auto-PR
+          git merge origin/test-auto-PR --no-edit
       - name: Abort merge
         if: steps.merge.exitcode != 0
         run: git merge --abort
