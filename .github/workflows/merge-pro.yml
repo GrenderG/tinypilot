@@ -14,19 +14,20 @@ jobs:
           token: ${{ secrets.PR_BOT_PAT }}
       - name: Merge upstream changes
         id: merge
-        continue-on-error: true
         run: |
+          set +e
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
           git fetch upstream test-auto-PR
           git checkout upstream/test-auto-PR
           git merge origin/test-auto-PR --no-edit
-      - name: Abort merge
-        if: steps.merge.exitcode != 0
-        run: git merge --abort
+          if [[ $? -ne 0 ]]; then
+            git merge --abort
+          fi
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.PR_BOT_PAT }}
+          base: test-auto-PR
           branch: community-changes-${{ github.sha }}
           delete-branch: true
           # If the committer to the community repo (github.actor) has no access
@@ -37,8 +38,6 @@ jobs:
             TEST Merge the last changes from community repository :
 
             https://github.com/tiny-pilot/tinypilot/commit/${{ github.sha }}
-
-            Conflicts: ${{ steps.merge.exitcode != 0 && 'Yes' || 'No' }}
 
             **Do not use "Squash and merge" !**
             Merge this PR with a merge commit, keeping the commit history.
