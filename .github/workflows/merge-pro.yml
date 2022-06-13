@@ -12,21 +12,15 @@ jobs:
           repository: tiny-pilot/tinypilot-pro
           ref: test-auto-PR
           token: ${{ secrets.PR_BOT_PAT }}
-      - name: setup git config
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-      - name: Reset the default branch with upstream changes
+      - name: Merge upstream changes
+        id: merge
         run: |
           git remote add upstream https://github.com/tiny-pilot/tinypilot.git
-          git pull upstream test-auto-PR --no-rebase --allow-unrelated-histories || true
-          CONFLICTS="$(git diff --name-only --diff-filter=U --relative)"
-          if [[ -z "${CONFLICTS}" ]]; then
-            HAS_CONFLICTS='No'
-          else
-            HAS_CONFLICTS='Yes'
-          fi
-          echo "has_conflicts="${HAS_CONFLICTS}"" >> "${GITHUB_ENV}"
+          git fetch upstream test-auto-PR
+          git merge upstream/test-auto-PR --no-edit
+      - name: Abort merge
+        if: steps.merge.exitcode != 0
+        run: git merge --abort
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
@@ -42,7 +36,7 @@ jobs:
 
             https://github.com/tiny-pilot/tinypilot/commit/${{ github.sha }}
 
-            Conflicts: ${{ env.has_conflicts }}
+            Conflicts: ${{ steps.merge.exitcode != 0 && 'Yes' || 'No' }}
 
             **Do not use "Squash and merge" !**
             Merge this PR with a merge commit, keeping the commit history.
